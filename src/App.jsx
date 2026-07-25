@@ -16,7 +16,7 @@ function App() {
       case 'home':
         return <Home setCurrentPage={setCurrentPage} />;
       case 'recovery':
-        return <RecoveryAssistant />;
+        return <RecoveryAssistant setCurrentPage={setCurrentPage} />;
       case 'emergency':
         return <EmergencyScript />;
       case 'caregiver':

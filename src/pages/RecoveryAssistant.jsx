@@ -12,7 +12,10 @@ import {
   Sparkles,
   Keyboard,
   Send,
-  Check
+  Check,
+  ArrowRight,
+  History,
+  FileText
 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
@@ -22,7 +25,7 @@ import SafetyAlert, { checkSafetyDanger } from '../components/SafetyAlert';
 import { useLanguage } from '../context/LanguageContext';
 import { SUPPORTED_LANGUAGES } from '../utils/language';
 
-export default function RecoveryAssistant() {
+export default function RecoveryAssistant({ setCurrentPage }) {
   const { language } = useLanguage();
   const speechLang = SUPPORTED_LANGUAGES[language]?.speechLang || 'en-US';
 
@@ -107,6 +110,14 @@ export default function RecoveryAssistant() {
     try {
       const result = await generateRecoveryGuidance(queryText, mood);
       setResponse(result);
+      // Auto-save every successful session so Progress History is always populated
+      saveSession({
+        transcript: queryText,
+        responseText: result.raw,
+        parsedResponse: result,
+        mood
+      });
+      setSaved(true);
     } catch (err) {
       setError(err.message || "Failed to generate support. Please check your network and API Key.");
     } finally {
@@ -329,12 +340,12 @@ export default function RecoveryAssistant() {
                 {saved ? (
                   <>
                     <Check className="h-4 w-4 text-emerald-400" />
-                    Saved
+                    Auto-Saved ✓
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4" />
-                    Save Session
+                    Re-Save
                   </>
                 )}
               </button>
@@ -422,6 +433,30 @@ export default function RecoveryAssistant() {
               </p>
             </div>
             <div className="absolute top-0 right-0 h-28 w-28 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+          </div>
+
+          {/* Cross-page Workflow Navigation */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <button
+              onClick={() => setCurrentPage?.('progress')}
+              className="flex-1 flex items-center justify-between gap-2 px-4 py-3 bg-slate-800/60 hover:bg-slate-800 border border-dark-border rounded-2xl text-xs font-semibold text-slate-300 hover:text-white transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <History className="h-4 w-4 text-purple-400" />
+                <span>Session saved &rarr; View Progress History</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+            </button>
+            <button
+              onClick={() => setCurrentPage?.('emergency')}
+              className="flex-1 flex items-center justify-between gap-2 px-4 py-3 bg-slate-800/60 hover:bg-slate-800 border border-dark-border rounded-2xl text-xs font-semibold text-slate-300 hover:text-white transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-rose-400" />
+                <span>Need immediate help? &rarr; Emergency Script</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+            </button>
           </div>
 
         </section>
