@@ -10,9 +10,9 @@ RecoverAI was built to be a simple, lightweight, yet visually stunning and premi
 
 1. **🎤 Talk to AI (Recovery Assistant):**
    - **Zero Typing Voice Interface:** Tap the microphone to speak about cravings, trigger events, or emotional distress. It translates speech to text live.
-   - **Speech Synthesis (TTS):** Automatically reads the AI's guidance aloud using browser text-to-speech with natural pacing (markdown elements and tags are automatically parsed out).
-   - **Structured AI Coping Feedback:** Responses are parsed into 5 distinct categories: Emotional Support, Immediate Action (Grounding), Safety Advice, Daily Affirmation, and Did You Know? (Educational).
-   - **Mood Selector:** Tailor the AI's response empathy by setting your mood (Anxious, Craving, Overwhelmed, Down, Calm).
+   - **Multilingual Dialect Support:** Select your preferred locale (English, Hindi, Tamil, or Telugu) from the sidebar footer dropdown or mobile header selector. Speech-to-text recognition and text-to-speech synthesis adapt dynamically to match the selected dialect.
+   - **Language-Aligned AI:** Appends strict language prompts instructing Groq Llama-3.3 to reply entirely in the user's selected language, while maintaining exact English structural tags for card parsing.
+   - **Empathy Tuner:** Set your active mood (Anxious, Craving, Overwhelmed, Down, Calm) to adapt AI responses to your emotional state.
 
 2. **🚨 Emergency Script Generator:**
    - One-tap tool that generates a highly direct, personal distress text/SMS for your trusted caregiver (e.g. Dad, sister).
@@ -32,11 +32,14 @@ RecoverAI was built to be a simple, lightweight, yet visually stunning and premi
 5. **📈 Progress & History Log:**
    - **Sobriety Calendar Milestone:** Set your sobriety start date; calculates and updates your continuous clean days in real-time.
    - **Daily Mood Tracker:** Log daily mood scores (1-5 slider) and personal reflections.
-   - **Saved Voice Sessions:** Expand, read, delete, or listen to saved AI dialogues.
+   - **Saved Voice Sessions:** Expand, read, delete, or listen to saved AI dialogues on demand.
 
 6. **🚨 Active Safety Interceptor:**
-   - Real-time client-side keyword scanner. If a user types or says trigger words like `suicide`, `overdose`, `kill myself`, `can't breathe`, or `relapse badly`, the app immediately interrupts the flow, blocks the AI query, and displays a prominent warning overlay.
+   - **Multilingual Danger Interception:** Real-time client-side keyword scanner. If a user types or says crisis trigger words (e.g. suicide, overdose, relapse, or their translations in Hindi, Tamil, and Telugu) in any language setting, the app immediately interrupts the flow, blocks the AI query, and displays a prominent warning overlay.
    - Provides one-click buttons to call Emergency Services (911) or the Crisis Hotline (988), alongside pre-written distress text templates to notify their primary caregiver.
+
+7. **⚠️ Contextual Caregiver Suggestion Alert:**
+   - Daily mood log history analyzer. If 3 or more consecutive logs evaluate to a low mood score (< 3, corresponding to "Anxious" and "Down" scores), a warning card automatically surfaces on the main dashboard advising the user to check caregiver support. The card is dismissible and resets when a new mood is saved.
 
 ---
 
