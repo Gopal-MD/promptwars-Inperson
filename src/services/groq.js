@@ -12,6 +12,10 @@ export const hasApiKey = () => {
   return !!getApiKey();
 };
 
+export const isEnvApiKeyActive = () => {
+  return !!import.meta.env.VITE_GROQ_API_KEY;
+};
+
 export const saveTempApiKey = (key) => {
   if (key) {
     localStorage.setItem('recoverai_temp_groq_api_key', key);

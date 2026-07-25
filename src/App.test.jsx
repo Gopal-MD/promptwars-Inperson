@@ -50,6 +50,6 @@ describe('RecoverAI Render Tests', () => {
   test('App main shell mounts and loads Layout navbar', () => {
     render(<App />);
     expect(screen.getAllByText(/RecoverAI/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/API Settings/i)).toBeDefined();
+    expect(screen.getByText(/Settings/i)).toBeDefined();
   });
 });

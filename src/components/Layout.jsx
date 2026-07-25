@@ -14,7 +14,7 @@ import {
   Globe
 } from 'lucide-react';
 import { getSoberDaysCount } from '../utils/localStorage';
-import { hasApiKey, saveTempApiKey, clearTempApiKey } from '../services/groq';
+import { hasApiKey, saveTempApiKey, clearTempApiKey, isEnvApiKeyActive } from '../services/groq';
 import { useLanguage } from '../context/LanguageContext';
 import { SUPPORTED_LANGUAGES } from '../utils/language';
 
@@ -34,6 +34,10 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
 
   const handleSaveApiKey = (e) => {
     e.preventDefault();
+    if (isEnvApiKeyActive()) {
+      setIsSettingsOpen(false);
+      return;
+    }
     if (apiKeyInput.trim()) {
       saveTempApiKey(apiKeyInput.trim());
       setKeySaved(true);
@@ -146,9 +150,11 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
           >
             <span className="flex items-center gap-2 font-medium">
               <Settings className="h-4 w-4" />
-              API Settings
+              {isEnvApiKeyActive() ? 'Settings' : 'API Settings'}
             </span>
-            <span className={`h-2.5 w-2.5 rounded-full ${apiKeyExists ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+            {!isEnvApiKeyActive() && (
+              <span className={`h-2.5 w-2.5 rounded-full ${apiKeyExists ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+            )}
           </button>
         </div>
       </aside>
@@ -204,40 +210,46 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
 
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
-                <Key className="h-5 w-5" />
+                {isEnvApiKeyActive() ? <Globe className="h-5 w-5" /> : <Key className="h-5 w-5" />}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Groq API Configuration</h3>
-                <p className="text-xs text-slate-400">Manage your Groq Developer API Key</p>
+                <h3 className="text-lg font-bold text-white font-display">
+                  {isEnvApiKeyActive() ? 'Language Settings' : 'Groq API Configuration'}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {isEnvApiKeyActive() ? 'Set your language preference' : 'Manage your Groq Developer API Key'}
+                </p>
               </div>
             </div>
 
-            {apiKeyExists ? (
-              <div className="mb-6 p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex items-start gap-3">
-                <div className="p-1 bg-emerald-500/20 rounded-full text-emerald-400 mt-0.5">
-                  <Check className="h-4 w-4" />
+            {!isEnvApiKeyActive() && (
+              apiKeyExists ? (
+                <div className="mb-6 p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex items-start gap-3">
+                  <div className="p-1 bg-emerald-500/20 rounded-full text-emerald-400 mt-0.5">
+                    <Check className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">API Key Active</h4>
+                    <p className="text-xs text-emerald-500/70 mt-1">API Key is loaded. You're ready to communicate with Groq.</p>
+                    <button 
+                      onClick={handleClearApiKey}
+                      className="mt-3 text-xs font-semibold text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                    >
+                      Reset & Remove Key
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-white">API Key Active</h4>
-                  <p className="text-xs text-emerald-500/70 mt-1">API Key is loaded. You're ready to communicate with Groq.</p>
-                  <button 
-                    onClick={handleClearApiKey}
-                    className="mt-3 text-xs font-semibold text-rose-400 hover:text-rose-300 underline cursor-pointer"
-                  >
-                    Reset & Remove Key
-                  </button>
+              ) : (
+                <div className="mb-6 p-4 bg-amber-950/20 border border-amber-500/20 rounded-xl">
+                  <p className="text-xs text-amber-300 leading-relaxed">
+                    No environment API key detected. Please add <strong>VITE_GROQ_API_KEY</strong> to your <code>.env</code> file, or enter a temporary one below. Temporary keys are stored in your local browser storage.
+                  </p>
                 </div>
-              </div>
-            ) : (
-              <div className="mb-6 p-4 bg-amber-950/20 border border-amber-500/20 rounded-xl">
-                <p className="text-xs text-amber-300 leading-relaxed">
-                  No environment API key detected. Please add <strong>VITE_GROQ_API_KEY</strong> to your <code>.env</code> file, or enter a temporary one below. Temporary keys are stored in your local browser storage.
-                </p>
-              </div>
+              )
             )}
 
             <form onSubmit={handleSaveApiKey} className="space-y-5">
-              <div className="border-b border-dark-border pb-4">
+              <div className={isEnvApiKeyActive() ? "" : "border-b border-dark-border pb-4"}>
                 <label className="block text-xs font-medium text-slate-400 mb-3 flex items-center gap-1.5">
                   <Globe className="h-4 w-4 text-emerald-400" />
                   Language Preference
@@ -260,36 +272,49 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="api-key-input" className="block text-xs font-medium text-slate-400 mb-2">
-                  Groq API Key
-                </label>
-                <input
-                  id="api-key-input"
-                  type="password"
-                  value={apiKeyInput}
-                  onChange={(e) => setApiKeyInput(e.target.value)}
-                  placeholder="AIzaSy..."
-                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-all font-mono"
-                  required
-                />
-              </div>
+              {!isEnvApiKeyActive() && (
+                <div>
+                  <label htmlFor="api-key-input" className="block text-xs font-medium text-slate-400 mb-2">
+                    Groq API Key
+                  </label>
+                  <input
+                    id="api-key-input"
+                    type="password"
+                    value={apiKeyInput}
+                    onChange={(e) => setApiKeyInput(e.target.value)}
+                    placeholder="gsk_..."
+                    className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-all font-mono"
+                    required
+                  />
+                </div>
+              )}
 
               <div className="flex gap-3 justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsSettingsOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-dark-border hover:bg-slate-800/40 text-sm font-medium text-slate-400 transition-all cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={keySaved}
-                  className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer flex items-center gap-2"
-                >
-                  {keySaved ? 'Saved!' : 'Save & Close'}
-                </button>
+                {isEnvApiKeyActive() ? (
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer"
+                  >
+                    Close
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsSettingsOpen(false)}
+                      className="px-4 py-2.5 rounded-xl border border-dark-border hover:bg-slate-800/40 text-sm font-medium text-slate-400 transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={keySaved}
+                      className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      {keySaved ? 'Saved!' : 'Save & Close'}
+                    </button>
+                  </>
+                )}
               </div>
             </form>
           </div>
