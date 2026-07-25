@@ -63,19 +63,7 @@ export default function RecoveryAssistant() {
     };
   }, [transcript, stopListening]);
 
-  // Read response aloud once fetched
-  useEffect(() => {
-    if (response) {
-      const fullText = `
-        ${response.emotionalSupport}. 
-        Immediate action: ${response.immediateAction}. 
-        Safety advice: ${response.safetyAdvice}. 
-        Remember: ${response.encouragingMessage}. 
-        Educational tip: ${response.educationalTip}.
-      `;
-      speak(fullText);
-    }
-  }, [response, speak]);
+
 
   const toggleListen = () => {
     if (isListening) {
