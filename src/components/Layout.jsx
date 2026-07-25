@@ -116,6 +116,29 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
             </div>
           </div>
 
+          {/* Language Selector in main sidebar nav */}
+          <div className="relative">
+            <select
+              value={language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-dark-border bg-dark-card hover:bg-slate-800/40 text-slate-400 hover:text-slate-200 transition-all text-xs appearance-none cursor-pointer focus:outline-none focus:border-emerald-500 font-medium"
+              style={{
+                backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`,
+                backgroundPosition: 'right 0.75rem center',
+                backgroundSize: '1rem',
+                backgroundRepeat: 'no-repeat',
+                paddingRight: '2rem'
+              }}
+              title="Change Language"
+            >
+              {Object.entries(SUPPORTED_LANGUAGES).map(([code, langInfo]) => (
+                <option key={code} value={code} className="bg-dark-card text-white">
+                  🌐 {langInfo.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Settings Trigger */}
           <button 
             onClick={() => setIsSettingsOpen(true)}
@@ -137,13 +160,29 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
             <Heart className="h-6 w-6 text-emerald-400" />
             <span className="font-bold font-display text-white">RecoverAI</span>
           </div>
-          <button 
-            onClick={() => setIsSettingsOpen(true)}
-            className="p-2 border border-dark-border rounded-xl hover:bg-slate-800/40"
-            aria-label="Settings"
-          >
-            <Settings className="h-5 w-5 text-slate-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <select
+                value={language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="bg-transparent border border-dark-border rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none cursor-pointer font-semibold"
+                title="Change Language"
+              >
+                {Object.entries(SUPPORTED_LANGUAGES).map(([code, langInfo]) => (
+                  <option key={code} value={code} className="bg-dark-card text-white">
+                    {langInfo.label.substring(0, 3)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button 
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2 border border-dark-border rounded-xl hover:bg-slate-800/40"
+              aria-label="Settings"
+            >
+              <Settings className="h-5 w-5 text-slate-400" />
+            </button>
+          </div>
         </header>
 
         <div className="p-6 md:p-10 max-w-5xl mx-auto w-full flex-1">

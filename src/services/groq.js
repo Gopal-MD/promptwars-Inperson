@@ -18,19 +18,15 @@ export const saveTempApiKey = (key) => {
   }
 };
 
+import { SUPPORTED_LANGUAGES } from '../utils/language';
+
 export const clearTempApiKey = () => {
   localStorage.removeItem('recoverai_temp_groq_api_key');
 };
 
 const getLanguageInstruction = () => {
   const code = typeof localStorage !== 'undefined' ? (localStorage.getItem('recoverai_language') || 'en') : 'en';
-  const labels = {
-    en: 'English',
-    hi: 'Hindi',
-    ta: 'Tamil',
-    te: 'Telugu'
-  };
-  const langLabel = labels[code] || 'English';
+  const langLabel = SUPPORTED_LANGUAGES[code]?.label || 'English';
   return `\nRespond entirely in ${langLabel}, but keep the [TAG] markers themselves in English exactly as specified.`;
 };
 
