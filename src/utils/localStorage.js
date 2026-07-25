@@ -100,7 +100,7 @@ export const saveSession = (session) => {
   const newSession = {
     id: Date.now().toString(),
     timestamp: new Date().toISOString(),
-    ...session // { transcript, responseText, parsedResponse, mood }
+    ...session // { transcript, responseText, parsedResponse, mood, language }
   };
   
   history.unshift(newSession); // Newest first

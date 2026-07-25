@@ -25,8 +25,11 @@ import {
   setCaregiverContact
 } from '../utils/localStorage';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import { useLanguage } from '../context/LanguageContext';
+import { SUPPORTED_LANGUAGES } from '../utils/language';
 
 export default function Progress() {
+  const { language } = useLanguage();
   const [soberDateInput, setSoberDateInput] = useState('');
   const [soberDays, setSoberDays] = useState(0);
   const [dateUpdated, setDateUpdated] = useState(false);
@@ -46,6 +49,11 @@ export default function Progress() {
   const [caregiverUpdated, setCaregiverUpdated] = useState(false);
 
   const { isSpeaking, speak, stop: stopSpeaking } = useSpeechSynthesis();
+
+  const getSpeechLanguage = (itemLanguage) => {
+    const langCode = itemLanguage || language || 'en';
+    return SUPPORTED_LANGUAGES[langCode]?.speechLang || 'en-US';
+  };
 
   useEffect(() => {
     // Load Initial Data
@@ -408,7 +416,13 @@ export default function Progress() {
                         <div className="flex justify-between items-center bg-slate-950/40 p-3 rounded-xl border border-dark-border">
                           <span className="text-xs text-slate-400 font-semibold">Listen to the AI guidance:</span>
                           <button
-                            onClick={() => { if (isSpeaking) { stopSpeaking(); } else { speak(item.responseText); } }}
+                            onClick={() => {
+                              if (isSpeaking) {
+                                stopSpeaking();
+                              } else {
+                                speak(item.responseText, { lang: getSpeechLanguage(item.language) });
+                              }
+                            }}
                             className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                               isSpeaking ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'border-dark-border text-slate-400 hover:text-slate-200'
                             }`}

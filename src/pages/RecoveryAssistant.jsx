@@ -115,7 +115,8 @@ export default function RecoveryAssistant({ setCurrentPage }) {
         transcript: queryText,
         responseText: result.raw,
         parsedResponse: result,
-        mood
+        mood,
+        language
       });
       setSaved(true);
     } catch (err) {
@@ -131,7 +132,8 @@ export default function RecoveryAssistant({ setCurrentPage }) {
       transcript: transcript || textBackup || "Voice session",
       responseText: response.raw,
       parsedResponse: response,
-      mood: mood
+      mood: mood,
+      language
     };
     saveSession(sessionData);
     setSaved(true);

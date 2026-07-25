@@ -27,10 +27,10 @@ global.webkitSpeechRecognition = vi.fn().mockImplementation(function() {
   this.onend = vi.fn();
 });
 
-describe('RecoverAI Render Tests', () => {
+describe('Nivara AI Render Tests', () => {
   test('Home page renders and shows main dashboard metrics and options', () => {
     render(<Home setCurrentPage={() => {}} />);
-    expect(screen.getByText(/Welcome to RecoverAI/i)).toBeDefined();
+    expect(screen.getByText(/Welcome to Nivara AI/i)).toBeDefined();
     expect(screen.getByText(/Talk to AI/i)).toBeDefined();
     expect(screen.getByText(/Emergency Script/i)).toBeDefined();
   });
@@ -49,7 +49,7 @@ describe('RecoverAI Render Tests', () => {
 
   test('App main shell mounts and loads Layout navbar', () => {
     render(<App />);
-    expect(screen.getAllByText(/RecoverAI/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Nivara AI/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Settings/i)).toBeDefined();
   });
 });

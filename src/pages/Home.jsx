@@ -96,13 +96,13 @@ export default function Home({ setCurrentPage }) {
       <section className="text-left space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 font-semibold">
           <Sparkles className="h-3.5 w-3.5" />
-          Welcome to RecoverAI
+          Welcome to Nivara AI
         </div>
         <h2 className="text-4xl md:text-5xl font-extrabold font-display text-white tracking-tight leading-tight m-0">
           Your Recovery Companion
         </h2>
         <p className="text-base md:text-lg text-slate-400 max-w-2xl leading-relaxed">
-          RecoverAI uses conversational AI, safety alerts, and speech interfaces to assist you and your loved ones through stressful recovery moments.
+          Nivara AI uses conversational AI, safety alerts, and speech interfaces to assist you and your loved ones through stressful recovery moments.
         </p>
       </section>
 

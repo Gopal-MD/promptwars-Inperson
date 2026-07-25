@@ -80,8 +80,8 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
               <Heart className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold font-display tracking-tight text-white m-0 leading-none">RecoverAI</h1>
-              <span className="text-xs text-slate-400 font-sans">Your AI Companion</span>
+              <h1 className="text-xl font-bold font-display tracking-tight text-white m-0 leading-none">Nivara AI</h1>
+              <span className="text-[10px] text-slate-400 font-sans leading-tight">Multilingual AI Recovery & Prevention</span>
             </div>
           </div>
 
@@ -164,7 +164,7 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
         <header className="p-6 border-b border-dark-border flex justify-between items-center bg-dark-bg/60 backdrop-blur-md sticky top-0 z-10 md:hidden">
           <div className="flex items-center gap-2" onClick={() => setCurrentPage('home')}>
             <Heart className="h-6 w-6 text-emerald-400" />
-            <span className="font-bold font-display text-white">RecoverAI</span>
+            <span className="font-bold font-display text-white">Nivara AI</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">

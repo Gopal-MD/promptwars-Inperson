@@ -22,11 +22,13 @@ describe('localStorage.js Utils Tests', () => {
       transcript: 'I need help',
       responseText: 'Here is help',
       parsedResponse: {},
-      mood: 'anxious'
+      mood: 'anxious',
+      language: 'hi'
     };
     const history = saveSession(session);
     expect(history.length).toBe(1);
     expect(history[0].transcript).toBe('I need help');
+    expect(history[0].language).toBe('hi');
     expect(history[0].id).toBeDefined();
 
     const retrieved = getSessionHistory();
@@ -145,29 +147,31 @@ describe('localStorage.js Utils Tests', () => {
       transcript: `session ${i}`,
       responseText: '',
       parsedResponse: {},
-      mood: 'calm'
+      mood: 'calm',
+      language: 'en'
     }));
     localStorage.setItem('recoverai_session_history', JSON.stringify(existing));
 
-    saveSession({ transcript: 'new session', responseText: '', parsedResponse: {}, mood: 'anxious' });
+    saveSession({ transcript: 'new session', responseText: '', parsedResponse: {}, mood: 'anxious', language: 'ta' });
     const history = getSessionHistory();
     expect(history.length).toBe(50);
     // newest first — the new session should be at index 0
     expect(history[0].transcript).toBe('new session');
+    expect(history[0].language).toBe('ta');
   });
 
   test('deleteSession removes the correct session by id', async () => {
     localStorage.clear(); // isolate from previous test state
 
     // Save first session; history = ['first'] — capture its id
-    const history1 = saveSession({ transcript: 'first', responseText: '', parsedResponse: {}, mood: 'calm' });
+    const history1 = saveSession({ transcript: 'first', responseText: '', parsedResponse: {}, mood: 'calm', language: 'en' });
     const idToDelete = history1[0].id;
 
     // Delay 2ms so Date.now() produces a different id for the second session
     await new Promise(r => setTimeout(r, 2));
 
     // Save second session; history = ['second', 'first'] (newest first)
-    saveSession({ transcript: 'second', responseText: '', parsedResponse: {}, mood: 'anxious' });
+    saveSession({ transcript: 'second', responseText: '', parsedResponse: {}, mood: 'anxious', language: 'hi' });
 
     // Both sessions should now exist
     expect(getSessionHistory().length).toBe(2);

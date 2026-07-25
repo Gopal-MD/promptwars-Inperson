@@ -21,11 +21,13 @@ export const useSpeechSynthesis = (options) => {
     };
   }, []);
 
-  const speak = (text) => {
+  const speak = (text, speakOptions = {}) => {
     if (!window.speechSynthesis) {
       console.warn('Speech synthesis not supported in this browser.');
       return;
     }
+
+    const speakLang = speakOptions?.lang || lang;
 
     window.speechSynthesis.cancel();
 
@@ -39,7 +41,7 @@ export const useSpeechSynthesis = (options) => {
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = lang;
+    utterance.lang = speakLang;
     utteranceRef.current = utterance;
 
     utterance.onstart = () => setIsSpeaking(true);
@@ -58,9 +60,9 @@ export const useSpeechSynthesis = (options) => {
     const setVoice = () => {
       voices = window.speechSynthesis.getVoices();
       const preferredVoice = voices.find(
-        v => v.lang.toLowerCase() === lang.toLowerCase()
+        v => v.lang.toLowerCase() === speakLang.toLowerCase()
       ) || voices.find(
-        v => v.lang.toLowerCase().startsWith(lang.split('-')[0].toLowerCase())
+        v => v.lang.toLowerCase().startsWith(speakLang.split('-')[0].toLowerCase())
       ) || voices.find(
         v => v.lang.startsWith('en')
       ) || voices[0];
