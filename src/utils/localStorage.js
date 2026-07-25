@@ -65,8 +65,28 @@ export const addMoodLog = (score, note = '') => {
     logs.shift();
   }
   
+  // Clear recommendation dismissal state
+  localStorage.removeItem('recoverai_dismiss_mood_suggestion');
+  
   localStorage.setItem(KEYS.MOOD_LOGS, JSON.stringify(logs));
   return logs;
+};
+
+export const hasConsecutiveLowMoods = () => {
+  const logs = getMoodLogs();
+  if (!logs || logs.length < 3) return false;
+  const sorted = [...logs].sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  let count = 0;
+  for (let i = 0; i < sorted.length; i++) {
+    if (Number(sorted[i].score) < 3) {
+      count++;
+      if (count >= 3) return true;
+    } else {
+      count = 0;
+    }
+  }
+  return false;
 };
 
 // 3. Saved AI Assistant Sessions

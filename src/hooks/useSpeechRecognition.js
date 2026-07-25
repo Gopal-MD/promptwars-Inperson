@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useSpeechRecognition = () => {
+export const useSpeechRecognition = (options) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [browserSupportsSpeechRecognition, setBrowserSupportsSpeechRecognition] = useState(false);
   const recognitionRef = useRef(null);
+
+  const lang = typeof options === 'string' ? options : (options?.lang || 'en-US');
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -13,7 +15,7 @@ export const useSpeechRecognition = () => {
       const rec = new SpeechRecognition();
       rec.continuous = true;
       rec.interimResults = true;
-      rec.lang = 'en-US';
+      rec.lang = lang;
 
       rec.onresult = (event) => {
         let currentResult = '';
@@ -34,7 +36,17 @@ export const useSpeechRecognition = () => {
 
       recognitionRef.current = rec;
     }
-  }, []);
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, [lang]);
 
   const startListening = () => {
     if (!recognitionRef.current) return;

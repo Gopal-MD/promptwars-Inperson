@@ -22,6 +22,18 @@ export const clearTempApiKey = () => {
   localStorage.removeItem('recoverai_temp_groq_api_key');
 };
 
+const getLanguageInstruction = () => {
+  const code = typeof localStorage !== 'undefined' ? (localStorage.getItem('recoverai_language') || 'en') : 'en';
+  const labels = {
+    en: 'English',
+    hi: 'Hindi',
+    ta: 'Tamil',
+    te: 'Telugu'
+  };
+  const langLabel = labels[code] || 'English';
+  return `\nRespond entirely in ${langLabel}, but keep the [TAG] markers themselves in English exactly as specified.`;
+};
+
 const queryGroq = async (systemInstruction, userInput, temperature = 0.5, maxTokens = 800) => {
   const apiKey = getApiKey();
   if (!apiKey) {
@@ -106,7 +118,7 @@ Outline a simple safety measure. If danger or high relapse risk is implied, stro
 Offer a strong, positive, short affirmation about their recovery journey. Focus on hope and choice.
 
 [EDUCATIONAL_TIP]
-Share a scientific or psychological fact about craving management, triggers, or brain plasticity during recovery. Keep it simple.`;
+Share a scientific or psychological fact about craving management, triggers, or brain plasticity during recovery. Keep it simple.` + getLanguageInstruction();
 
   const text = await queryGroq(systemInstruction, userInput, 0.5, 800);
   return parseRecoveryResponse(text);
@@ -159,7 +171,7 @@ Ways to offer positive reinforcement, encourage milestone celebrations, and supp
 Behavioral, physical, or emotional red flags to monitor for potential relapse.
 
 [EMERGENCY_ADVICE]
-Clear instructions on what to do if there is a crisis or active relapse.`;
+Clear instructions on what to do if there is a crisis or active relapse.` + getLanguageInstruction();
 
   const text = await queryGroq(systemInstruction, userPrompt, 0.5, 1000);
   return parseCaregiverResponse(text);
@@ -180,7 +192,7 @@ The message MUST:
 3. Explicitly ask for the support they need.
 4. Urge the caregiver to call, text, or stay with them.
 5. Keep the generated script under 5-6 sentences, clean, and direct so it is easy to send.
-Only return the text of the message itself. Do not include subject lines, wrappers, quotes, or conversational introductions.`;
+Only return the text of the message itself. Do not include subject lines, wrappers, quotes, or conversational introductions.` + getLanguageInstruction();
 
   return await queryGroq(systemInstruction, userPrompt, 0.6, 250);
 };
@@ -193,7 +205,7 @@ export const generateEducationalAnswer = async (question) => {
   const systemInstruction = `You are an educational assistant specialized in neuroscience, psychology, and addiction recovery.
 Provide clear, scientific yet easy-to-understand explanations.
 Focus on destigmatizing addiction, explaining the biology of cravings (e.g. dopamine receptors, stress response), practical cognitive-behavioral tools, and withdrawal safety.
-Ensure explanations are supportive and direct. Break paragraphs with bullet points for readability. Limit responses to 300 words.`;
+Ensure explanations are supportive and direct. Break paragraphs with bullet points for readability. Limit responses to 300 words.` + getLanguageInstruction();
 
   return await queryGroq(systemInstruction, question, 0.5, 600);
 };

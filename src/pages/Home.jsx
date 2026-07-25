@@ -7,18 +7,29 @@ import {
   Heart,
   Calendar,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  X,
+  AlertCircle
 } from 'lucide-react';
-import { getSoberDaysCount, getSoberDate } from '../utils/localStorage';
+import { getSoberDaysCount, hasConsecutiveLowMoods } from '../utils/localStorage';
 
 export default function Home({ setCurrentPage }) {
   const [soberDays, setSoberDays] = useState(0);
-  const [soberDate, setSoberDate] = useState('');
+  const [showSuggestion, setShowSuggestion] = useState(false);
 
   useEffect(() => {
     setSoberDays(getSoberDaysCount());
-    setSoberDate(getSoberDate());
+    
+    const consecutiveLow = hasConsecutiveLowMoods();
+    const dismissed = localStorage.getItem('recoverai_dismiss_mood_suggestion') === 'true';
+    setShowSuggestion(consecutiveLow && !dismissed);
   }, []);
+
+  const handleDismissSuggestion = (e) => {
+    e.stopPropagation();
+    localStorage.setItem('recoverai_dismiss_mood_suggestion', 'true');
+    setShowSuggestion(false);
+  };
 
   const cards = [
     {
@@ -94,6 +105,38 @@ export default function Home({ setCurrentPage }) {
           RecoverAI uses conversational AI, safety alerts, and speech interfaces to assist you and your loved ones through stressful recovery moments.
         </p>
       </section>
+
+      {/* Contextual Caregiver Recommendation Alert */}
+      {showSuggestion && (
+        <div className="bg-amber-950/20 border border-amber-500/20 rounded-3xl p-5 flex items-start justify-between gap-4 animate-fade-in relative overflow-hidden text-left animate-slide-in">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500" />
+          <div className="flex gap-3">
+            <div className="p-2.5 bg-amber-500/10 text-amber-400 rounded-2xl shrink-0">
+              <AlertCircle className="h-5 w-5" />
+            </div>
+            <div className="space-y-1 text-left">
+              <h4 className="text-sm font-bold text-white">Daily Mood Trend Notice</h4>
+              <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
+                We noticed you have logged a sequence of difficult or anxious days. Consider sharing your feelings or configuring care templates. Reaching out can offer vital relief.
+              </p>
+              <button
+                onClick={() => setCurrentPage('caregiver')}
+                className="mt-2 text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors cursor-pointer group"
+              >
+                Go to Caregiver Support
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+          <button
+            onClick={handleDismissSuggestion}
+            className="p-1.5 hover:bg-slate-800/40 text-slate-500 hover:text-slate-300 rounded-xl transition-all cursor-pointer shrink-0"
+            aria-label="Dismiss alert"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Sobriety Streak Indicator Banner */}
       <section className="relative overflow-hidden rounded-3xl border border-dark-border bg-gradient-to-r from-slate-900 via-emerald-950/20 to-slate-900 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">

@@ -6,15 +6,12 @@ import {
   VolumeX, 
   Save, 
   AlertOctagon, 
-  Heart, 
   Compass, 
-  ShieldCheck, 
   Flame, 
   BookOpen, 
   Sparkles,
   Keyboard,
   Send,
-  Trash2,
   Check
 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
@@ -22,8 +19,13 @@ import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { generateRecoveryGuidance, hasApiKey } from '../services/groq';
 import { saveSession } from '../utils/localStorage';
 import SafetyAlert, { checkSafetyDanger } from '../components/SafetyAlert';
+import { useLanguage } from '../context/LanguageContext';
+import { SUPPORTED_LANGUAGES } from '../utils/language';
 
 export default function RecoveryAssistant() {
+  const { language } = useLanguage();
+  const speechLang = SUPPORTED_LANGUAGES[language]?.speechLang || 'en-US';
+
   const [mood, setMood] = useState('neutral');
   const [textBackup, setTextBackup] = useState('');
   const [useText, setUseText] = useState(false);
@@ -37,22 +39,29 @@ export default function RecoveryAssistant() {
   const {
     isListening,
     transcript,
-    setTranscript,
     startListening,
     stopListening,
     resetTranscript,
     browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+  } = useSpeechRecognition({ lang: speechLang });
 
-  const { isSpeaking, speak, stop: stopSpeaking } = useSpeechSynthesis();
+  const { isSpeaking, speak, stop: stopSpeaking } = useSpeechSynthesis({ lang: speechLang });
 
-  // Watch speech recognition transcript for safety triggers
+  // Watch speech recognition transcript for safety triggers (debounced 400ms)
   useEffect(() => {
-    if (transcript && checkSafetyDanger(transcript)) {
-      stopListening();
-      setSafetyTrigger(transcript);
-    }
-  }, [transcript]);
+    if (!transcript) return;
+
+    const handler = setTimeout(() => {
+      if (checkSafetyDanger(transcript)) {
+        stopListening();
+        setSafetyTrigger(transcript);
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [transcript, stopListening]);
 
   // Read response aloud once fetched
   useEffect(() => {
@@ -66,7 +75,7 @@ export default function RecoveryAssistant() {
       `;
       speak(fullText);
     }
-  }, [response]);
+  }, [response, speak]);
 
   const toggleListen = () => {
     if (isListening) {

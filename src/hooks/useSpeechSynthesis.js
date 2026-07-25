@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useSpeechSynthesis = () => {
+export const useSpeechSynthesis = (options) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef(null);
+
+  const lang = typeof options === 'string' ? options : (options?.lang || 'en-US');
 
   useEffect(() => {
     const checkInterval = setInterval(() => {
@@ -37,6 +39,7 @@ export const useSpeechSynthesis = () => {
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = lang;
     utteranceRef.current = utterance;
 
     utterance.onstart = () => setIsSpeaking(true);
@@ -49,14 +52,18 @@ export const useSpeechSynthesis = () => {
       setIsSpeaking(false);
     };
 
-    // Fetch and assign standard english voices
+    // Fetch and assign standard voices
     let voices = window.speechSynthesis.getVoices();
     
     const setVoice = () => {
       voices = window.speechSynthesis.getVoices();
       const preferredVoice = voices.find(
-        v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural'))
-      ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+        v => v.lang.toLowerCase() === lang.toLowerCase()
+      ) || voices.find(
+        v => v.lang.toLowerCase().startsWith(lang.split('-')[0].toLowerCase())
+      ) || voices.find(
+        v => v.lang.startsWith('en')
+      ) || voices[0];
       
       if (preferredVoice) {
         utterance.voice = preferredVoice;

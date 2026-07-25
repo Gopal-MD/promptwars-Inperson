@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { AlertOctagon, Phone, User, ShieldAlert, MessageSquare, Clipboard } from 'lucide-react';
+import { AlertOctagon, Phone, User, ShieldAlert, Clipboard } from 'lucide-react';
 import { getCaregiverContact } from '../utils/localStorage';
 
-// Safety keywords to search for
-const DANGER_KEYWORDS = [
-  'suicide',
-  'overdose',
-  'kill myself',
-  "can't breathe",
-  'relapse badly',
-  'panic attack',
-  'relapse',
-  'want to die'
-];
+import { ALL_DANGER_KEYWORDS } from '../utils/safetyKeywords';
 
 export const checkSafetyDanger = (text) => {
   if (!text) return false;
   const lowerText = text.toLowerCase();
-  return DANGER_KEYWORDS.some(keyword => lowerText.includes(keyword));
+  return ALL_DANGER_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
 };
 
 export default function SafetyAlert({ triggerText, onDismiss }) {

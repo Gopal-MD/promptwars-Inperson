@@ -6,6 +6,7 @@ import EmergencyScript from './pages/EmergencyScript';
 import CaregiverAssistant from './pages/CaregiverAssistant';
 import Learn from './pages/Learn';
 import Progress from './pages/Progress';
+import { LanguageProvider } from './context/LanguageContext';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -30,9 +31,11 @@ function App() {
   };
 
   return (
-    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-      {renderPage()}
-    </Layout>
+    <LanguageProvider>
+      <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+        {renderPage()}
+      </Layout>
+    </LanguageProvider>
   );
 }
 

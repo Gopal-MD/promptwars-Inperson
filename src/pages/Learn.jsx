@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { BookOpen, Send, Sparkles, AlertOctagon, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Send, Sparkles, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { generateEducationalAnswer, hasApiKey } from '../services/groq';
 
 export default function Learn() {
   const [customQuestion, setCustomQuestion] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [answer, setAnswer] = useState('');
   const [activeQuestion, setActiveQuestion] = useState('');
 

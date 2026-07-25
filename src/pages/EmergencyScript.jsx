@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clipboard, User, Heart, MessageSquare, Send, Check } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, Clipboard, User, Heart, MessageSquare, Check } from 'lucide-react';
 import { getCaregiverContact } from '../utils/localStorage';
 import { generateEmergencyScript, hasApiKey } from '../services/groq';
 
@@ -11,21 +11,20 @@ export default function EmergencyScript() {
   const [script, setScript] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     setCaregiver(getCaregiverContact());
   }, []);
 
   // Standard template fallback
-  const getTemplateScript = () => {
+  const getTemplateScript = useCallback(() => {
     return `Hi ${caregiver.name},\n\nI'm struggling right now and I am ${feeling}.\n\nPlease support me. Can you ${supportNeeded}?\n\nI don't want to relapse. I appreciate you.`;
-  };
+  }, [caregiver, feeling, supportNeeded]);
 
   // Set the default script on load
   useEffect(() => {
     setScript(getTemplateScript());
-  }, [caregiver, feeling, supportNeeded]);
+  }, [getTemplateScript]);
 
   const handleGenerateScript = async () => {
     if (!hasApiKey()) {
@@ -36,7 +35,6 @@ export default function EmergencyScript() {
     }
 
     setLoading(true);
-    setError('');
 
     try {
       const generated = await generateEmergencyScript(

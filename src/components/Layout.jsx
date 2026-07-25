@@ -10,12 +10,16 @@ import {
   Key, 
   Calendar,
   X,
-  Check
+  Check,
+  Globe
 } from 'lucide-react';
 import { getSoberDaysCount } from '../utils/localStorage';
 import { hasApiKey, saveTempApiKey, clearTempApiKey } from '../services/groq';
+import { useLanguage } from '../context/LanguageContext';
+import { SUPPORTED_LANGUAGES } from '../utils/language';
 
 export default function Layout({ children, currentPage, setCurrentPage }) {
+  const { language, changeLanguage } = useLanguage();
   const [soberDays, setSoberDays] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -193,7 +197,30 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
               </div>
             )}
 
-            <form onSubmit={handleSaveApiKey} className="space-y-4">
+            <form onSubmit={handleSaveApiKey} className="space-y-5">
+              <div className="border-b border-dark-border pb-4">
+                <label className="block text-xs font-medium text-slate-400 mb-3 flex items-center gap-1.5">
+                  <Globe className="h-4 w-4 text-emerald-400" />
+                  Language Preference
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(SUPPORTED_LANGUAGES).map(([code, langInfo]) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => changeLanguage(code)}
+                      className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
+                        language === code
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-md'
+                          : 'border-dark-border hover:bg-slate-800/40 text-slate-400'
+                      }`}
+                    >
+                      {langInfo.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label htmlFor="api-key-input" className="block text-xs font-medium text-slate-400 mb-2">
                   Groq API Key

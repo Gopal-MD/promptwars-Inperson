@@ -8,12 +8,11 @@ export default function CaregiverAssistant() {
   const [customContext, setCustomContext] = useState('');
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [advice, setAdvice] = useState(null); // { communication, avoid, reinforcement, warningSigns, emergencyAdvice }
   const [activeTab, setActiveTab] = useState('communication');
 
   // Pre-baked high quality templates for offline/keyless judging fallback
-  const getFallbackAdvice = (rel, sub) => {
+  const getFallbackAdvice = (_rel, _sub) => {
     return {
       communication: `1. Speak with empathy and ask open questions (e.g. "How can I make today easier for you?").\n2. Avoid lecturing or saying "Why can't you just stop?"\n3. Practice active listening: repeat back what you hear without immediate judgment or advice.`,
       avoid: `1. Walking on eggshells or avoiding all discussions of recovery.\n2. Bringing up past failures or using guilt to influence behavior.\n3. Keeping substances in the house or consuming them around the person in recovery.`,
@@ -31,7 +30,6 @@ export default function CaregiverAssistant() {
     }
 
     setLoading(true);
-    setError('');
     setAdvice(null);
 
     try {

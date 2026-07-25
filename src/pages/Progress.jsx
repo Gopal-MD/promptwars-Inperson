@@ -30,7 +30,6 @@ export default function Progress() {
 
   const [moodScore, setMoodScore] = useState(3);
   const [moodNote, setMoodNote] = useState('');
-  const [moodLogs, setMoodLogs] = useState([]);
   const [moodLogged, setMoodLogged] = useState(false);
 
   const [history, setHistory] = useState([]);
@@ -43,8 +42,6 @@ export default function Progress() {
     const sDate = getSoberDate();
     setSoberDateInput(sDate);
     setSoberDays(getSoberDaysCount());
-    
-    setMoodLogs(getMoodLogs());
     setHistory(getSessionHistory());
     
     // Check if logged today already
@@ -63,8 +60,7 @@ export default function Progress() {
 
   const handleLogMood = (e) => {
     e.preventDefault();
-    const updatedLogs = addMoodLog(moodScore, moodNote);
-    setMoodLogs(updatedLogs);
+    addMoodLog(moodScore, moodNote);
     setMoodLogged(true);
     setMoodNote('');
     setTimeout(() => setMoodLogged(false), 2500);
