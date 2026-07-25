@@ -285,11 +285,15 @@ export default function RecoveryAssistant() {
 
       {/* Structured Response Content Cards */}
       {response && !loading && (
-        <section className="space-y-6">
+        <section className="space-y-6 animate-fade-in">
+          {/* Controls bar */}
           <div className="flex justify-between items-center">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-              Groq Guidance Response
-            </h4>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Groq Guidance Response
+              </h4>
+            </div>
 
             {/* Audio Synthesis & Save Controls */}
             <div className="flex gap-2">
@@ -337,75 +341,89 @@ export default function RecoveryAssistant() {
             </div>
           </div>
 
-          {/* Grid of structured response cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Card 1: Emotional Support */}
-            <div className="bg-dark-card border border-dark-border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-3">
-                  <Compass className="h-3.5 w-3.5" />
-                  Emotional Support
-                </span>
-                <p className="text-sm text-slate-300 leading-relaxed font-medium">
-                  {response.emotionalSupport}
-                </p>
-              </div>
+          {/* Card 1: Emotional Support */}
+          <div className="relative rounded-3xl overflow-hidden border border-emerald-500/20 bg-gradient-to-br from-emerald-950/30 to-dark-card p-6 flex gap-4">
+            <div className="shrink-0 h-9 w-9 rounded-2xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
+              <Compass className="h-4.5 w-4.5 text-emerald-400" style={{height:'18px',width:'18px'}} />
             </div>
+            <div>
+              <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest block mb-2">
+                Emotional Support
+              </span>
+              <p className="text-sm text-slate-200 leading-relaxed">
+                {response.emotionalSupport}
+              </p>
+            </div>
+            <div className="absolute top-0 right-0 h-24 w-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+          </div>
 
-            {/* Card 2: Immediate Action */}
-            <div className="bg-dark-card border border-dark-border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
+          {/* Card 2 + 3: side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Card 2: Immediate Grounding */}
+            <div className="relative rounded-3xl overflow-hidden border border-teal-500/20 bg-gradient-to-br from-teal-950/30 to-dark-card p-6 flex gap-4">
+              <div className="shrink-0 h-9 w-9 rounded-2xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center">
+                <Flame style={{height:'18px',width:'18px'}} className="text-teal-400" />
+              </div>
               <div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-teal-400 font-bold uppercase tracking-wider mb-3">
-                  <Flame className="h-3.5 w-3.5" />
+                <span className="text-[10px] text-teal-400 font-bold uppercase tracking-widest block mb-2">
                   Immediate Grounding
                 </span>
-                <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                <p className="text-sm text-slate-200 leading-relaxed">
                   {response.immediateAction}
                 </p>
               </div>
+              <div className="absolute bottom-0 right-0 h-20 w-20 bg-teal-500/5 rounded-full blur-2xl pointer-events-none" />
             </div>
 
-            {/* Card 3: Safety Advice */}
-            <div className="bg-dark-card border border-dark-border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
+            {/* Card 3: Safety Measures */}
+            <div className="relative rounded-3xl overflow-hidden border border-rose-500/20 bg-gradient-to-br from-rose-950/30 to-dark-card p-6 flex gap-4">
+              <div className="shrink-0 h-9 w-9 rounded-2xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center">
+                <AlertOctagon style={{height:'18px',width:'18px'}} className="text-rose-400" />
+              </div>
               <div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-3">
-                  <AlertOctagon className="h-3.5 w-3.5" />
+                <span className="text-[10px] text-rose-400 font-bold uppercase tracking-widest block mb-2">
                   Safety Measures
                 </span>
-                <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                <p className="text-sm text-slate-200 leading-relaxed">
                   {response.safetyAdvice}
                 </p>
               </div>
+              <div className="absolute top-0 right-0 h-20 w-20 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
             </div>
-
-            {/* Card 4: Encouraging Affirmation */}
-            <div className="bg-dark-card border border-dark-border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-purple-400 font-bold uppercase tracking-wider mb-3">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Daily Affirmation
-                </span>
-                <p className="text-sm text-slate-300 leading-relaxed font-medium">
-                  {response.encouragingMessage}
-                </p>
-              </div>
-            </div>
-
-            {/* Card 5: Educational Tip */}
-            <div className="bg-dark-card border border-dark-border rounded-3xl p-6 md:col-span-2 relative overflow-hidden flex flex-col justify-between">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-3">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  Did You Know? (Educational)
-                </span>
-                <p className="text-sm text-slate-300 leading-relaxed font-medium">
-                  {response.educationalTip}
-                </p>
-              </div>
-            </div>
-
           </div>
+
+          {/* Card 4: Daily Affirmation */}
+          <div className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-950/30 to-dark-card p-6 flex gap-4">
+            <div className="shrink-0 h-9 w-9 rounded-2xl bg-purple-500/15 border border-purple-500/25 flex items-center justify-center">
+              <Sparkles style={{height:'18px',width:'18px'}} className="text-purple-400" />
+            </div>
+            <div>
+              <span className="text-[10px] text-purple-400 font-bold uppercase tracking-widest block mb-2">
+                Daily Affirmation
+              </span>
+              <p className="text-sm text-slate-200 leading-relaxed italic">
+                "{response.encouragingMessage}"
+              </p>
+            </div>
+            <div className="absolute bottom-0 right-0 h-28 w-28 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+          </div>
+
+          {/* Card 5: Educational Tip */}
+          <div className="relative rounded-3xl overflow-hidden border border-blue-500/20 bg-gradient-to-br from-blue-950/30 to-dark-card p-6 flex gap-4">
+            <div className="shrink-0 h-9 w-9 rounded-2xl bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
+              <BookOpen style={{height:'18px',width:'18px'}} className="text-blue-400" />
+            </div>
+            <div>
+              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest block mb-2">
+                Did You Know?
+              </span>
+              <p className="text-sm text-slate-200 leading-relaxed">
+                {response.educationalTip}
+              </p>
+            </div>
+            <div className="absolute top-0 right-0 h-28 w-28 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+          </div>
+
         </section>
       )}
 
