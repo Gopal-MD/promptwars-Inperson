@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, Clipboard, User, Heart, MessageSquare, Check } from 'lucide-react';
-import { getCaregiverContact } from '../utils/localStorage';
+import { getCaregiverContact, setCaregiverContact } from '../utils/localStorage';
 import { generateEmergencyScript, hasApiKey } from '../services/groq';
 
 export default function EmergencyScript() {
@@ -79,9 +79,16 @@ export default function EmergencyScript() {
       
       {/* Title section */}
       <section className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-full text-xs text-rose-400 font-semibold">
-          <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
-          Urgent Communication Tool
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-full text-xs text-rose-400 font-semibold">
+            <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
+            Urgent Communication Tool
+          </div>
+          {!hasApiKey() && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800 border border-dark-border rounded-full text-xs text-slate-400 font-semibold">
+              Offline Mode / Template Fallbacks Active
+            </div>
+          )}
         </div>
         <h2 className="text-3xl font-extrabold font-display text-white">Emergency Script Generator</h2>
         <p className="text-sm text-slate-400">
@@ -105,7 +112,11 @@ export default function EmergencyScript() {
               <input
                 type="text"
                 value={caregiver.name}
-                onChange={(e) => setCaregiver({ ...caregiver, name: e.target.value })}
+                onChange={(e) => {
+                  const updated = { ...caregiver, name: e.target.value };
+                  setCaregiver(updated);
+                  setCaregiverContact(updated);
+                }}
                 className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
                 placeholder="Caregiver Name"
               />

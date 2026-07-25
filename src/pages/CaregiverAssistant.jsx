@@ -63,9 +63,16 @@ export default function CaregiverAssistant() {
       
       {/* Title Header */}
       <section className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs text-indigo-400 font-semibold">
-          <Users className="h-3.5 w-3.5 text-indigo-400" />
-          Caregiver Portal
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs text-indigo-400 font-semibold">
+            <Users className="h-3.5 w-3.5 text-indigo-400" />
+            Caregiver Portal
+          </div>
+          {!hasApiKey() && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800 border border-dark-border rounded-full text-xs text-slate-400 font-semibold">
+              Offline Mode / Template Fallbacks Active
+            </div>
+          )}
         </div>
         <h2 className="text-3xl font-extrabold font-display text-white">Caregiver Support Assistant</h2>
         <p className="text-sm text-slate-400">

@@ -10,7 +10,8 @@ import {
   Check, 
   MessageSquare,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  User
 } from 'lucide-react';
 import { 
   getSoberDate, 
@@ -19,7 +20,9 @@ import {
   getMoodLogs, 
   addMoodLog, 
   getSessionHistory, 
-  deleteSession 
+  deleteSession,
+  getCaregiverContact,
+  setCaregiverContact
 } from '../utils/localStorage';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 
@@ -35,6 +38,12 @@ export default function Progress() {
   const [history, setHistory] = useState([]);
   const [expandedSession, setExpandedSession] = useState(null); // id of active expanded history card
 
+  // Caregiver Config State
+  const [caregiverName, setCaregiverName] = useState('');
+  const [caregiverRelation, setCaregiverRelation] = useState('');
+  const [caregiverPhone, setCaregiverPhone] = useState('');
+  const [caregiverUpdated, setCaregiverUpdated] = useState(false);
+
   const { isSpeaking, speak, stop: stopSpeaking } = useSpeechSynthesis();
 
   useEffect(() => {
@@ -44,6 +53,11 @@ export default function Progress() {
     setSoberDays(getSoberDaysCount());
     setHistory(getSessionHistory());
     
+    const contact = getCaregiverContact();
+    setCaregiverName(contact.name || '');
+    setCaregiverRelation(contact.relation || '');
+    setCaregiverPhone(contact.phone || '');
+
     // Check if logged today already
     const todayStr = new Date().toISOString().split('T')[0];
     const loggedToday = getMoodLogs().some(log => log.date === todayStr);
@@ -56,6 +70,17 @@ export default function Progress() {
     setSoberDays(getSoberDaysCount());
     setDateUpdated(true);
     setTimeout(() => setDateUpdated(false), 2000);
+  };
+
+  const handleUpdateCaregiver = (e) => {
+    e.preventDefault();
+    setCaregiverContact({
+      name: caregiverName,
+      relation: caregiverRelation,
+      phone: caregiverPhone
+    });
+    setCaregiverUpdated(true);
+    setTimeout(() => setCaregiverUpdated(false), 2000);
   };
 
   const handleLogMood = (e) => {
@@ -112,31 +137,97 @@ export default function Progress() {
       {/* Grid: Milestone Setter & Mood Logger */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        {/* Sobriety Milestone Card */}
-        <section className="bg-dark-card border border-dark-border rounded-3xl p-6 flex flex-col justify-between">
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-emerald-400" />
-              Sobriety Date Settings
-            </h3>
-            
-            <div className="p-4 bg-emerald-950/15 border border-emerald-500/10 rounded-2xl flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-black text-white">{soberDays} Days</div>
-                <div className="text-xs text-emerald-400 font-semibold">Continuous Sobriety Milestone</div>
+        {/* Left Column Stack */}
+        <div className="space-y-8">
+          {/* Sobriety Milestone Card */}
+          <section className="bg-dark-card border border-dark-border rounded-3xl p-6 flex flex-col justify-between">
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-emerald-400" />
+                Sobriety Date Settings
+              </h3>
+              
+              <div className="p-4 bg-emerald-950/15 border border-emerald-500/10 rounded-2xl flex items-center justify-between">
+                <div>
+                  <div className="text-2xl font-black text-white">{soberDays} Days</div>
+                  <div className="text-xs text-emerald-400 font-semibold">Continuous Sobriety Milestone</div>
+                </div>
+                <CalendarDays className="h-10 w-10 text-emerald-500/35" />
               </div>
-              <CalendarDays className="h-10 w-10 text-emerald-500/35" />
-            </div>
 
-            <form onSubmit={handleUpdateSoberDate} className="space-y-3 pt-2">
+              <form onSubmit={handleUpdateSoberDate} className="space-y-3 pt-2">
+                <div className="space-y-1">
+                  <label htmlFor="sober-date-picker" className="text-xs text-slate-400 font-semibold">Sobriety Start Date</label>
+                  <input
+                    id="sober-date-picker"
+                    type="date"
+                    value={soberDateInput}
+                    onChange={(e) => setSoberDateInput(e.target.value)}
+                    className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer"
+                >
+                  {dateUpdated ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      Milestone Updated!
+                    </>
+                  ) : (
+                    "Save Milestone Date"
+                  )}
+                </button>
+              </form>
+            </div>
+          </section>
+
+          {/* Primary Caregiver settings */}
+          <section className="bg-dark-card border border-dark-border rounded-3xl p-6">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
+              <User className="h-4 w-4 text-emerald-400" />
+              Primary Caregiver Settings
+            </h3>
+
+            <form onSubmit={handleUpdateCaregiver} className="space-y-4">
               <div className="space-y-1">
-                <label htmlFor="sober-date-picker" className="text-xs text-slate-400 font-semibold">Sobriety Start Date</label>
+                <label htmlFor="caregiver-name-picker" className="text-xs text-slate-400 font-semibold">Caregiver's Name</label>
                 <input
-                  id="sober-date-picker"
-                  type="date"
-                  value={soberDateInput}
-                  onChange={(e) => setSoberDateInput(e.target.value)}
+                  id="caregiver-name-picker"
+                  type="text"
+                  value={caregiverName}
+                  onChange={(e) => setCaregiverName(e.target.value)}
+                  placeholder="e.g. Dad, Mom, Jane"
                   className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="caregiver-relation-picker" className="text-xs text-slate-400 font-semibold">Relationship</label>
+                <input
+                  id="caregiver-relation-picker"
+                  type="text"
+                  value={caregiverRelation}
+                  onChange={(e) => setCaregiverRelation(e.target.value)}
+                  placeholder="e.g. Father, Mother, Sponsor"
+                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="caregiver-phone-picker" className="text-xs text-slate-400 font-semibold">Phone Number</label>
+                <input
+                  id="caregiver-phone-picker"
+                  type="tel"
+                  value={caregiverPhone}
+                  onChange={(e) => setCaregiverPhone(e.target.value)}
+                  placeholder="e.g. 555-0199"
+                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
+                  required
                 />
               </div>
 
@@ -144,18 +235,18 @@ export default function Progress() {
                 type="submit"
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer"
               >
-                {dateUpdated ? (
+                {caregiverUpdated ? (
                   <>
                     <Check className="h-4 w-4" />
-                    Milestone Updated!
+                    Contact Saved!
                   </>
                 ) : (
-                  "Save Milestone Date"
+                  "Save Contact Info"
                 )}
               </button>
             </form>
-          </div>
-        </section>
+          </section>
+        </div>
 
         {/* Daily Mood Logger */}
         <section className="bg-dark-card border border-dark-border rounded-3xl p-6">

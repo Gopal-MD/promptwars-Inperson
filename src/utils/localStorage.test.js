@@ -65,4 +65,17 @@ describe('localStorage.js Utils Tests', () => {
     const finalLogs = addMoodLog(3, 'Today log');
     expect(finalLogs.length).toBe(30);
   });
+
+  test('setCaregiverContact successfully updates multiple times', () => {
+    const contact1 = { name: 'Sister', relation: 'Sibling', phone: '555-0300' };
+    setCaregiverContact(contact1);
+    expect(getCaregiverContact().name).toBe('Sister');
+
+    const contact2 = { name: 'Sponsor Bob', relation: 'Sponsor', phone: '555-0400' };
+    setCaregiverContact(contact2);
+    const retrieved = getCaregiverContact();
+    expect(retrieved.name).toBe('Sponsor Bob');
+    expect(retrieved.relation).toBe('Sponsor');
+    expect(retrieved.phone).toBe('555-0400');
+  });
 });
