@@ -98,6 +98,21 @@ Run the Vitest test suites verifying element renders, routing states, and mocks:
 npm run test
 ```
 
+### ☁️ Hosting on Vercel
+
+To host this project on Vercel:
+1. Push the codebase to your GitHub repository.
+2. Log in to Vercel and click **Add New Project**.
+3. Import the `promptwars-Inperson` repository.
+4. Vercel will automatically configure the Vite build framework:
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+5. In the project settings, add the following Environment Variable:
+   - **Key:** `VITE_GROQ_API_KEY`
+   - **Value:** `gsk_your_groq_api_key_here`
+6. Click **Deploy**. Vercel will build and launch your application instantly.
+
 ---
 
 ## 🛡️ Safety & Disclaimer
