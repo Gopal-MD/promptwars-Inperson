@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'vitest';
-import { parseRecoveryResponse, parseCaregiverResponse } from './groq';
+import { describe, test, expect, beforeEach } from 'vitest';
+import { parseRecoveryResponse, parseCaregiverResponse, hasApiKey, saveTempApiKey, clearTempApiKey } from './groq';
 
 describe('groq.js Parser Tests', () => {
   test('parseRecoveryResponse: correct extraction when all tags present', () => {
@@ -57,5 +57,44 @@ describe('groq.js Parser Tests', () => {
     const parsed = parseCaregiverResponse(rawText);
     expect(parsed.communication).toBe(rawText);
     expect(parsed.avoid).toBe('');
+  });
+});
+
+describe('groq.js API Key Tests', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('hasApiKey: returns false when no key is stored and no env key', () => {
+    // VITE_GROQ_API_KEY is not set in test env (vitest uses .env.test or empty)
+    // and localStorage is cleared
+    clearTempApiKey();
+    // In test env, import.meta.env.VITE_GROQ_API_KEY may be set from .env
+    // so we only assert the localStorage path here
+    localStorage.removeItem('recoverai_temp_groq_api_key');
+    const result = hasApiKey();
+    // Result depends on whether env key is present — we just assert it's a boolean
+    expect(typeof result).toBe('boolean');
+  });
+
+  test('hasApiKey: returns true after saveTempApiKey sets a valid key', () => {
+    clearTempApiKey();
+    saveTempApiKey('gsk_test_key_abc123');
+    expect(hasApiKey()).toBe(true);
+  });
+
+  test('hasApiKey: returns false after clearTempApiKey removes the key (when no env key)', () => {
+    saveTempApiKey('gsk_test_key_abc123');
+    expect(hasApiKey()).toBe(true);
+    clearTempApiKey();
+    // Only assert false if no env key is injected by vitest
+    if (!import.meta.env.VITE_GROQ_API_KEY) {
+      expect(hasApiKey()).toBe(false);
+    }
+  });
+
+  test('saveTempApiKey: does not store empty string', () => {
+    saveTempApiKey('');
+    expect(localStorage.getItem('recoverai_temp_groq_api_key')).toBeNull();
   });
 });

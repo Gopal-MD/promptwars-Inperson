@@ -2,10 +2,14 @@ import { describe, test, expect, beforeEach } from 'vitest';
 import { 
   saveSession, 
   getSessionHistory, 
+  deleteSession,
   getCaregiverContact, 
   setCaregiverContact, 
   getMoodLogs, 
-  addMoodLog 
+  addMoodLog,
+  setSoberDate,
+  getSoberDaysCount,
+  hasConsecutiveLowMoods
 } from './localStorage';
 
 describe('localStorage.js Utils Tests', () => {
@@ -77,5 +81,101 @@ describe('localStorage.js Utils Tests', () => {
     expect(retrieved.name).toBe('Sponsor Bob');
     expect(retrieved.relation).toBe('Sponsor');
     expect(retrieved.phone).toBe('555-0400');
+  });
+
+  // --- getSoberDaysCount ---
+  test('getSoberDaysCount: returns correct day count for a past date', () => {
+    const past = new Date();
+    past.setDate(past.getDate() - 10);
+    const pastStr = past.toISOString().split('T')[0];
+    setSoberDate(pastStr);
+    expect(getSoberDaysCount()).toBe(10);
+  });
+
+  test('getSoberDaysCount: returns 0 when sobriety date is in the future', () => {
+    const future = new Date();
+    future.setDate(future.getDate() + 5);
+    setSoberDate(future.toISOString().split('T')[0]);
+    expect(getSoberDaysCount()).toBe(0);
+  });
+
+  test('getSoberDaysCount: returns 0 when sobriety date is today', () => {
+    const today = new Date().toISOString().split('T')[0];
+    setSoberDate(today);
+    expect(getSoberDaysCount()).toBe(0);
+  });
+
+  // --- hasConsecutiveLowMoods ---
+  test('hasConsecutiveLowMoods: returns true for 3+ consecutive low scores', () => {
+    const logs = [
+      { date: '2026-07-20', score: 2, note: '' },
+      { date: '2026-07-21', score: 1, note: '' },
+      { date: '2026-07-22', score: 2, note: '' },
+    ];
+    localStorage.setItem('recoverai_mood_logs', JSON.stringify(logs));
+    expect(hasConsecutiveLowMoods()).toBe(true);
+  });
+
+  test('hasConsecutiveLowMoods: returns false when a high score breaks the streak', () => {
+    const logs = [
+      { date: '2026-07-20', score: 2, note: '' },
+      { date: '2026-07-21', score: 4, note: '' }, // breaks streak
+      { date: '2026-07-22', score: 1, note: '' },
+      { date: '2026-07-23', score: 2, note: '' },
+    ];
+    localStorage.setItem('recoverai_mood_logs', JSON.stringify(logs));
+    expect(hasConsecutiveLowMoods()).toBe(false);
+  });
+
+  test('hasConsecutiveLowMoods: returns false when fewer than 3 logs exist', () => {
+    const logs = [
+      { date: '2026-07-22', score: 1, note: '' },
+      { date: '2026-07-23', score: 2, note: '' },
+    ];
+    localStorage.setItem('recoverai_mood_logs', JSON.stringify(logs));
+    expect(hasConsecutiveLowMoods()).toBe(false);
+  });
+
+  // --- Session History ---
+  test('saveSession caps history at 50 and drops the oldest session', () => {
+    // Pre-seed 50 sessions
+    const existing = Array.from({ length: 50 }, (_, i) => ({
+      id: String(i),
+      timestamp: new Date().toISOString(),
+      transcript: `session ${i}`,
+      responseText: '',
+      parsedResponse: {},
+      mood: 'calm'
+    }));
+    localStorage.setItem('recoverai_session_history', JSON.stringify(existing));
+
+    saveSession({ transcript: 'new session', responseText: '', parsedResponse: {}, mood: 'anxious' });
+    const history = getSessionHistory();
+    expect(history.length).toBe(50);
+    // newest first — the new session should be at index 0
+    expect(history[0].transcript).toBe('new session');
+  });
+
+  test('deleteSession removes the correct session by id', async () => {
+    localStorage.clear(); // isolate from previous test state
+
+    // Save first session; history = ['first'] — capture its id
+    const history1 = saveSession({ transcript: 'first', responseText: '', parsedResponse: {}, mood: 'calm' });
+    const idToDelete = history1[0].id;
+
+    // Delay 2ms so Date.now() produces a different id for the second session
+    await new Promise(r => setTimeout(r, 2));
+
+    // Save second session; history = ['second', 'first'] (newest first)
+    saveSession({ transcript: 'second', responseText: '', parsedResponse: {}, mood: 'anxious' });
+
+    // Both sessions should now exist
+    expect(getSessionHistory().length).toBe(2);
+
+    // Delete 'first' — one entry should remain: 'second'
+    const afterDelete = deleteSession(idToDelete);
+    expect(afterDelete.find(s => s.id === idToDelete)).toBeUndefined();
+    expect(afterDelete.length).toBe(1);
+    expect(afterDelete[0].transcript).toBe('second');
   });
 });
