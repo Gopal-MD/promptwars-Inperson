@@ -61,7 +61,7 @@ RecoverAI was built to be a simple, lightweight, yet visually stunning and premi
 
 ### Prerequisites
 
-- Node.js (v20+ or v22+)
+- Node.js (v20.19+ or v22.12+)
 - NPM (v10+)
 
 ### Installation
@@ -107,10 +107,7 @@ To host this project on Vercel:
 1. Push the codebase to your GitHub repository.
 2. Log in to Vercel and click **Add New Project**.
 3. Import the `promptwars-Inperson` repository.
-4. Vercel will automatically configure the Vite build framework:
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
+4. Vercel will automatically detect the Vite framework and configure build settings.
 5. In the project settings, add the following Environment Variable:
    - **Key:** `VITE_GROQ_API_KEY`
    - **Value:** `gsk_your_groq_api_key_here`

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Send, Sparkles, HelpCircle, CheckCircle2, ShieldAlert, Brain, Heart, Pill } from 'lucide-react';
+import { BookOpen, Send, Sparkles, CheckCircle2, ShieldAlert, Brain, Heart, Pill } from 'lucide-react';
 import { generateEducationalAnswer, hasApiKey } from '../services/groq';
 
 export default function Learn() {
